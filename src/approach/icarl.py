@@ -4,7 +4,8 @@ import numpy as np
 from copy import deepcopy
 from argparse import ArgumentParser
 from torch.utils.data import DataLoader
-
+from tqdm import tqdm
+from fvcore.nn import FlopCountAnalysis
 from .incremental_learning import Inc_Learning_Appr
 from datasets.exemplars_dataset import ExemplarsDataset
 from datasets.exemplars_selection import override_dataset_transform
@@ -24,7 +25,6 @@ class Appr(Inc_Learning_Appr):
                                    exemplars_dataset)
         self.model_old = None
         self.lamb = lamb
-
         # iCaRL is expected to be used with exemplars. If needed to be used without exemplars, overwrite here the
         # `_get_optimizer` function with the one in LwF and update the criterion
         have_exemplars = self.exemplars_dataset.max_num_exemplars + self.exemplars_dataset.max_num_exemplars_per_class
@@ -113,7 +113,6 @@ class Appr(Inc_Learning_Appr):
 
         # FINETUNING TRAINING -- contains the epochs loop
         super().train_loop(t, trn_loader, val_loader)
-
         # EXEMPLAR MANAGEMENT -- select training subset
         # Algorithm 4: iCaRL ConstructExemplarSet and Algorithm 5: iCaRL ReduceExemplarSet
         self.exemplars_dataset.collect_exemplars(self.model, trn_loader, val_loader.dataset.transform)
@@ -136,7 +135,7 @@ class Appr(Inc_Learning_Appr):
         self.model.train()
         if self.fix_bn and t > 0:
             self.model.freeze_bn()
-        for images, targets in trn_loader:
+        for images, targets in tqdm(trn_loader):
             # Forward old model
             outputs_old = None
             if t > 0:
@@ -149,7 +148,7 @@ class Appr(Inc_Learning_Appr):
             loss.backward()
             torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.clipgrad)
             self.optimizer.step()
-
+        
     def eval(self, t, val_loader):
         """Contains the evaluation code"""
         with torch.no_grad():

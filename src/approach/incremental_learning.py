@@ -2,7 +2,7 @@ import time
 import torch
 import numpy as np
 from argparse import ArgumentParser
-
+from tqdm import tqdm
 from loggers.exp_logger import ExperimentLogger
 from datasets.exemplars_dataset import ExemplarsDataset
 
@@ -31,7 +31,7 @@ class Inc_Learning_Appr:
         self.warmup_loss = torch.nn.CrossEntropyLoss()
         self.fix_bn = fix_bn
         self.eval_on_train = eval_on_train
-        self.optimizer = None
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr, weight_decay=self.wd)
 
     @staticmethod
     def extra_parser(args):
@@ -48,7 +48,8 @@ class Inc_Learning_Appr:
 
     def _get_optimizer(self):
         """Returns the optimizer"""
-        return torch.optim.SGD(self.model.parameters(), lr=self.lr, weight_decay=self.wd, momentum=self.momentum)
+        # return torch.optim.SGD(self.model.parameters(), lr=self.lr, weight_decay=self.wd, momentum=self.momentum)
+        return torch.optim.Adam(self.model.parameters(), lr=self.lr, weight_decay=self.wd)
 
     def train(self, t, trn_loader, val_loader):
         """Main train structure"""
@@ -165,7 +166,7 @@ class Inc_Learning_Appr:
         self.model.train()
         if self.fix_bn and t > 0:
             self.model.freeze_bn()
-        for images, targets in trn_loader:
+        for images, targets in tqdm(trn_loader):
             # Forward current model
             outputs = self.model(images.to(self.device))
             loss = self.criterion(t, outputs, targets.to(self.device))

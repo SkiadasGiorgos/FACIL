@@ -1,6 +1,6 @@
 from os.path import join
 
-_BASE_DATA_PATH = "../data"
+_BASE_DATA_PATH = "/fssd4/user-data/skiadasg/vggface2/data/"
 
 dataset_config = {
     'mnist': {
@@ -41,7 +41,8 @@ dataset_config = {
         ]
     },
     'vggface2': {
-        'path': join(_BASE_DATA_PATH, 'VGGFace2'),
+        # 'path': join(_BASE_DATA_PATH, 'VGGFace2'),
+        'path': join(_BASE_DATA_PATH),
         'resize': 256,
         'crop': 224,
         'flip': True,

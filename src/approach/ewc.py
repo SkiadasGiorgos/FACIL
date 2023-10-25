@@ -60,7 +60,8 @@ class Appr(Inc_Learning_Appr):
             params = list(self.model.model.parameters()) + list(self.model.heads[-1].parameters())
         else:
             params = self.model.parameters()
-        return torch.optim.SGD(params, lr=self.lr, weight_decay=self.wd, momentum=self.momentum)
+        # return torch.optim.SGD(params, lr=self.lr, weight_decay=self.wd, momentum=self.momentum)
+        return torch.optim.Adam(params, lr=self.lr, weight_decay=self.wd)
 
     def compute_fisher_matrix_diag(self, trn_loader):
         # Store Fisher Information

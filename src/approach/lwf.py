@@ -1,7 +1,7 @@
 import torch
 from copy import deepcopy
 from argparse import ArgumentParser
-
+from tqdm import tqdm
 from .incremental_learning import Inc_Learning_Appr
 from datasets.exemplars_dataset import ExemplarsDataset
 
@@ -50,7 +50,8 @@ class Appr(Inc_Learning_Appr):
             params = list(self.model.model.parameters()) + list(self.model.heads[-1].parameters())
         else:
             params = self.model.parameters()
-        return torch.optim.SGD(params, lr=self.lr, weight_decay=self.wd, momentum=self.momentum)
+        # return torch.optim.SGD(params, lr=self.lr, weight_decay=self.wd, momentum=self.momentum)
+        return torch.optim.Adam(params, lr=self.lr, weight_decay=self.wd)
 
     def train_loop(self, t, trn_loader, val_loader):
         """Contains the epochs loop"""
@@ -82,7 +83,7 @@ class Appr(Inc_Learning_Appr):
         self.model.train()
         if self.fix_bn and t > 0:
             self.model.freeze_bn()
-        for images, targets in trn_loader:
+        for images, targets in tqdm(trn_loader):
             # Forward old model
             targets_old = None
             if t > 0:

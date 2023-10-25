@@ -1,0 +1,6 @@
+# python3 -u src/main_incremental.py --approach lwf --nc-first-task 250 --num-tasks 2 --network 'resnet18' --exp-name "lwf_250_res" 
+# python3 -u src/main_incremental.py --approach ewc --nc-first-task 250 --num-tasks 2 --network 'resnet18' --exp-name "ewc_250_res"  
+# python3 -u src/main_incremental.py --approach lwf --nc-first-task 250 --num-tasks 2 --network 'googlenet' --exp-name "lwf_250" 
+python3 -u src/main_incremental.py --approach ewc --nc-first-task 250 --num-tasks 2 --network 'googlenet' --exp-name "ewc_250" 
+# python3 -u src/main_incremental.py --approach finetuning --nc-first-task 250 --num-tasks 2 --network 'resnet18' --exp-name "finetuning_250_res"  
+python3 -u src/main_incremental.py --approach finetuning --nc-first-task 250 --num-tasks 2 --network 'googlenet' --exp-name "finetuning_250" 

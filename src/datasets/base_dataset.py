@@ -73,7 +73,7 @@ def get_data(path, num_tasks, nc_first_task, validation, shuffle_classes, class_
     # ALL OR TRAIN
     for this_image, this_label in trn_lines:
         if not os.path.isabs(this_image):
-            this_image = os.path.join(path, this_image)
+            this_image = os.path.join(path,'test/', this_image)
         this_label = int(this_label)
         if this_label not in class_order:
             continue

@@ -4,7 +4,8 @@ import numpy as np
 from copy import deepcopy
 from argparse import ArgumentParser
 from torch.utils.data import DataLoader
-
+from tqdm import tqdm 
+from fvcore.nn import FlopCountAnalysis
 from .incremental_learning import Inc_Learning_Appr
 from datasets.exemplars_dataset import ExemplarsDataset
 
@@ -171,7 +172,7 @@ class Appr(Inc_Learning_Appr):
                 # Train bias correction layers
                 clock0 = time.time()
                 total_loss, total_acc = 0, 0
-                for inputs, targets in bic_val_loader:
+                for inputs, targets in tqdm(bic_val_loader):
                     # Forward current model
                     with torch.no_grad():
                         outputs = self.model(inputs.to(self.device))
@@ -207,13 +208,13 @@ class Appr(Inc_Learning_Appr):
 
         # STAGE 3: EXEMPLAR MANAGEMENT
         self.exemplars_dataset.collect_exemplars(self.model, trn_loader, val_loader.dataset.transform)
-
+    
     def train_epoch(self, t, trn_loader):
         """Runs a single epoch"""
         self.model.train()
         if self.fix_bn and t > 0:
             self.model.freeze_bn()
-        for images, targets in trn_loader:
+        for images, targets in tqdm(trn_loader):
             # Forward old model
             targets_old = None
             if t > 0:
